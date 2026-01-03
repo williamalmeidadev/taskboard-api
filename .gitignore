@@ -1,0 +1,71 @@
+# Java class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Maven
+/target/
+dependency-reduced-pom.xml
+release.properties
+buildNumber.properties
+.mvn/timing.properties
+
+# IntelliJ IDEA
+/.idea/
+*.iml
+*.iws
+/out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Environment files
+.env
+.env.*.local
+
+# Temporary files
+tmp/
+*.tmp
+
+# Logs directory
+logs/
+
+# Spring Boot Devtools (local dev files)
+spring-boot-devtools.properties
+
+# Other
+*.log
+*.swp
+*~
+
+# Ignore build outputs from IDEs
+**/target/
+
+# Do not ignore Maven wrapper itself (keep .mvn and mvnw files tracked)
+# .mvn/wrapper/maven-wrapper.jar is typically committed; do not ignore it explicitly
+
