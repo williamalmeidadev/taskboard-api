@@ -23,7 +23,7 @@ public record TaskResponseDTO(
                 task.getDescription(),
                 task.getStatus(),
                 task.getPriority(),
-                task.getCategory().getId(),
+                task.getCategory() != null ? task.getCategory().getId() : null,
                 task.getCreatedAt()
         );
     }

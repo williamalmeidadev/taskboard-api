@@ -38,6 +38,7 @@ public class Task {
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TaskPriority priority;
 
     @PrePersist
