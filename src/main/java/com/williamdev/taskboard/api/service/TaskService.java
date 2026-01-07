@@ -81,4 +81,33 @@ public class TaskService {
             throw new TaskOperationException("Failed to delete task: " + e.getMessage());
         }
     }
+
+    public TaskResponseDTO update(UUID id, TaskRequestDTO dto) {
+        if (dto.title() == null || dto.title().isBlank()) {
+            throw new InvalidTaskDataException("Task title must not be empty");
+        }
+        if (dto.status() == null) {
+            throw new InvalidTaskDataException("Task status must not be null");
+        }
+        if (dto.priority() == null) {
+            throw new InvalidTaskDataException("Task priority must not be null");
+        }
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        Category category = null;
+        if (dto.categoryId() != null) {
+            category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+        }
+        try {
+            task.setTitle(dto.title());
+            task.setDescription(dto.description());
+            task.setStatus(dto.status());
+            task.setPriority(dto.priority());
+            task.setCategory(category);
+            return TaskResponseDTO.fromEntity(taskRepository.save(task));
+        } catch (Exception e) {
+            throw new TaskOperationException("Failed to update task: " + e.getMessage());
+        }
+    }
 }

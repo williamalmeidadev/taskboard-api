@@ -39,6 +39,20 @@ public class TaskController {
         return ResponseEntity.ok(service.findByCategory(categoryId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody TaskRequestDTO body
+    ) {
+        TaskResponseDTO updated = service.update(id, body);
+        return ResponseEntity.ok(updated);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
