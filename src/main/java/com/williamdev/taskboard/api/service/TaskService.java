@@ -5,6 +5,9 @@ import com.williamdev.taskboard.api.dto.TaskResponseDTO;
 import com.williamdev.taskboard.api.entity.Category;
 import com.williamdev.taskboard.api.entity.Task;
 import com.williamdev.taskboard.api.exception.CategoryNotFoundException;
+import com.williamdev.taskboard.api.exception.InvalidTaskDataException;
+import com.williamdev.taskboard.api.exception.TaskNotFoundException;
+import com.williamdev.taskboard.api.exception.TaskOperationException;
 import com.williamdev.taskboard.api.repository.CategoryRepository;
 import com.williamdev.taskboard.api.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +24,31 @@ public class TaskService {
     private final CategoryRepository categoryRepository;
 
     public TaskResponseDTO create(TaskRequestDTO dto) {
-        Category category = categoryRepository.findById(dto.categoryId())
+        if (dto.title() == null || dto.title().isBlank()) {
+            throw new InvalidTaskDataException("Task title must not be empty");
+        }
+        if (dto.status() == null) {
+            throw new InvalidTaskDataException("Task status must not be null");
+        }
+        if (dto.priority() == null) {
+            throw new InvalidTaskDataException("Task priority must not be null");
+        }
+        Category category = null;
+        if (dto.categoryId() != null) {
+            category = categoryRepository.findById(dto.categoryId())
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
-
-        Task task = new Task();
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setStatus(dto.status());
-        task.setPriority(dto.priority());
-        task.setCategory(category);
-
-        return TaskResponseDTO.fromEntity(taskRepository.save(task));
+        }
+        try {
+            Task task = new Task();
+            task.setTitle(dto.title());
+            task.setDescription(dto.description());
+            task.setStatus(dto.status());
+            task.setPriority(dto.priority());
+            task.setCategory(category);
+            return TaskResponseDTO.fromEntity(taskRepository.save(task));
+        } catch (Exception e) {
+            throw new TaskOperationException("Failed to create task: " + e.getMessage());
+        }
     }
 
     public List<TaskResponseDTO> findAll() {
@@ -48,7 +65,20 @@ public class TaskService {
                 .toList();
     }
 
+    public TaskResponseDTO findById(UUID id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        return TaskResponseDTO.fromEntity(task);
+    }
+
     public void delete(UUID id) {
-        taskRepository.deleteById(id);
+        if (!taskRepository.existsById(id)) {
+            throw new TaskNotFoundException("Task not found");
+        }
+        try {
+            taskRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new TaskOperationException("Failed to delete task: " + e.getMessage());
+        }
     }
 }
