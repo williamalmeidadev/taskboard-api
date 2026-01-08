@@ -59,6 +59,9 @@ public class TaskService {
     }
 
     public List<TaskResponseDTO> findByCategory(UUID categoryId) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException("Category not found");
+        }
         return taskRepository.findByCategoryId(categoryId)
                 .stream()
                 .map(TaskResponseDTO::fromEntity)
