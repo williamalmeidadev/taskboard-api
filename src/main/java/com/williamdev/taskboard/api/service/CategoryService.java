@@ -5,6 +5,8 @@ import com.williamdev.taskboard.api.entity.Category;
 import com.williamdev.taskboard.api.exception.CategoryAlreadyExistsException;
 import com.williamdev.taskboard.api.exception.CategoryNotFoundException;
 import com.williamdev.taskboard.api.repository.CategoryRepository;
+import com.williamdev.taskboard.api.entity.Task;
+import com.williamdev.taskboard.api.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class CategoryService {
 
     private final CategoryRepository repository;
+    private final TaskRepository taskRepository;
 
     public CategoryResponseDTO create(String name) {
         if (repository.existsByName(name)) {
@@ -45,6 +48,11 @@ public class CategoryService {
         if (!repository.existsById(id)) {
             throw new CategoryNotFoundException("Category not found");
         }
+        List<Task> tasks = taskRepository.findByCategoryId(id);
+        for (Task task : tasks) {
+            task.setCategory(null);
+        }
+        taskRepository.saveAll(tasks);
         repository.deleteById(id);
     }
 }
